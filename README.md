@@ -2,7 +2,7 @@
 ---
 
 
-![ORT logo]("C:\Users\alumnoFI\TallerOrt\ORT logo")
+![ORT logo]("\TallerOrt\ORTlogo")
 
 GIT es un Systema de Control de versiones distribuido (DCVS). Cada desarrollador tiene una copia completa
 del repositorio, por lo que en caso de perdida del repositorio central, cualquier repositorio cliente se puede usar
