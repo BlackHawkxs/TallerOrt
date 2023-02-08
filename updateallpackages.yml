@@ -1,0 +1,17 @@
+---
+- name: "Update all packages"
+  hosts: all
+
+  tasks:
+  - name: Update all packages for Rocky
+    ansible.builtin.dnf:
+      name: "*"
+      state: latest
+      when: ansible_facts['os_family'] == "Rocky"
+  
+  - name: Update all packages for Debian
+    ansible.builtin.apt:
+      name: "*"
+      state: latest
+      when: ansible_facts['os_family'] == "Debian"
+...
