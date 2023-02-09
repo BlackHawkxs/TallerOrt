@@ -1,0 +1,35 @@
+---
+- name: Install postfix and configure postfix
+  hosts: all
+  become: yes
+  vars:
+    postfix_inet_interfaces: enp0s3
+    postfix_config_file: /etc/postfix/main.cf
+    postfix_inet_protocols: tcp
+
+  tasks:
+    - name: "Ensure postfix is installed."
+      ansible.builtin.package:
+        name: postfix
+        state: present
+
+    - name: Update Postfix configuration.
+      ansible.builtin.lineinfile:
+        dest: "{{ postfix_config_file }}"
+        line: "{{ item.name }} = {{ item.value }}"
+        regexp: "^{{ item.name }} ="
+        mode: 0644
+      with_items:
+        - name: inet_interfaces
+          value: "{{ postfix_inet_interfaces }}"
+        - name: inet_protocols
+          value: "{{ postfix_inet_protocols }}"
+      notify: restart postfix
+
+  handlers:
+    - name: restart postfix 
+      service:
+        name: postfix
+        state: restarted
+        enabled: true
+...
