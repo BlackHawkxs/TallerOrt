@@ -1,0 +1,10 @@
+---
+- name: "install services from roles"
+  hosts: Ubuntu
+  vars:
+    postfix_inet_interfaces: enp0s3
+    postfix_config_file: /etc/postfix/main.cf
+    postfix_inet_protocols: tcp
+    Server_Name: userver
+  roles: 
+    - postfix

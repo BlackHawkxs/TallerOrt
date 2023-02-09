@@ -1,0 +1,40 @@
+---
+- name: Install postfix and configure postfix
+  hosts: all
+  become: yes
+  vars:
+    postfix_inet_interfaces: enp0s3
+    postfix_config_file: /etc/postfix/main.cf
+    postfix_inet_protocols: tcp
+    Server_Name: userver
+  tasks:
+    - name: "Ensure postfix is installed."
+      ansible.builtin.package:
+        name: postfix
+        state: present
+
+    - name: Update Postfix configuration.
+      ansible.builtin.template:
+        src: ./template/template.j2
+        dest: /etc/postfix/
+        owner: mathias
+        group: mathias
+        mode: '0644'
+
+    - name: "Install dovecot"
+      ansible.builtin.package:
+        name: 
+          - dovecot-imapd
+          - dovecot-pop3d
+        state: present
+
+  handlers:
+    - name: restart postfix 
+      service:
+        name: postfix
+        state: restarted
+        enabled: true
+
+    
+
+...

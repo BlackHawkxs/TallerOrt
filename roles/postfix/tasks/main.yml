@@ -1,0 +1,22 @@
+---
+    - name: "Ensure postfix is installed."
+      ansible.builtin.package:
+        name: postfix
+        state: present
+
+    - name: Update Postfix configuration.
+      ansible.builtin.template:
+        src: ./template/template.j2
+        dest: /etc/postfix/
+        owner: mathias
+        group: mathias
+        mode: '0644'
+
+    - name: "Install dovecot"
+      ansible.builtin.package:
+        name: 
+          - dovecot-imapd
+          - dovecot-pop3d
+        state: present
+
+ 
