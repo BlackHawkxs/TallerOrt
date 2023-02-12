@@ -1,0 +1,60 @@
+---
+- name: "Services install"
+  hosts: all
+  become: yes
+  tasks:
+    - name: "Update all packages"
+      ansible.builtin.package:
+        name: "*"
+        state: latest
+#      when: ansible_os_family == "Rocky"
+#
+#    - name: "Update all packages for Debian"
+ #     ansible.builtin.apt:
+#        name: "*"
+ #       state: latest
+ #     when: ansible_os_family == "Debian"
+ 
+    - name: "install postfix"
+      ansible.builtin.package:
+        name: postfix
+        state: present
+ #     when: ansible_os_family == "Rocky"
+  
+  #  - name: "Install postfix on Debian"
+ #     ansible.builtin.apt:
+ #       name: postfix
+ #       state: present
+ #     when: ansible_os_family == "Debian"
+    - name: "Install dovecot on Debian"
+      ansible.builtin.package:
+        name:
+          - dovecot-core
+          - dovecot-imapd 
+          - dovecot-pop3d
+        state: present
+      when: ansible_os_family == "Debian"
+    
+    - name: "Install dovecot on Rocky"
+      ansible.builtin.package:
+        name: dovecot          
+        state: present
+      when: ansible_os_family == "Rocky"
+  
+    - name: "Install httpd"
+      ansible.builtin.package:
+        name: httpd
+        state: present
+      when: ansible_os_family == "Rocky"
+    
+    - name: "Install apache"
+      ansible.builtin.package:
+        name: apache2
+        state: present
+      when: ansible_os_family == "Debian"
+    
+    - name: "Install squirrelmail"
+      ansible.builtin.package:
+        name: squirrelmail
+        state: present
+      when: ansible_os_family == "Debian"

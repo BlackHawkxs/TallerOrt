@@ -1,0 +1,15 @@
+---
+- name: "Update OS"
+  hosts: all
+  become: yes
+  tasks:
+    - name: Update packages for Rocky
+      dnf:
+        name: "*"
+        state: latest
+      when: ansible_os_family == "Rocky"
+    - name: Update packages for Rocky
+      apt:
+        name: "*"
+        state: latest
+      when: ansible_os_family == "Debian"
