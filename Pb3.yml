@@ -2,30 +2,15 @@
 - name: "Services install"
   hosts: all
   become: yes
+  vars:
+    - apache_timeout: 150
+    - httpd_Server_admin: mathias@localhost
   tasks:
     - name: "Update all packages"
       ansible.builtin.package:
         name: "*"
         state: latest
-#      when: ansible_os_family == "Rocky"
-#
-#    - name: "Update all packages for Debian"
- #     ansible.builtin.apt:
-#        name: "*"
- #       state: latest
- #     when: ansible_os_family == "Debian"
- 
-    - name: "install postfix"
-      ansible.builtin.package:
-        name: postfix
-        state: present
- #     when: ansible_os_family == "Rocky"
-  
-  #  - name: "Install postfix on Debian"
- #     ansible.builtin.apt:
- #       name: postfix
- #       state: present
- #     when: ansible_os_family == "Debian"
+
     - name: "Install dovecot on Debian"
       ansible.builtin.package:
         name:
@@ -53,8 +38,28 @@
         state: present
       when: ansible_os_family == "Debian"
     
-    - name: "Install squirrelmail"
-      ansible.builtin.package:
-        name: squirrelmail
-        state: present
+ #   - name: "Install squirrelmail"
+ #     ansible.builtin.package:
+ #       name: squirrelmail
+ #       state: present
+ #     when: ansible_os_family == "Debian"
+   
+    - name: Update dovecot configuration.
+      ansible.builtin.template:
+        src: ./template/dovecotconf.j2
+        dest: /etc/dovecot/dovecot.conf
+        #owner: mathias
+        #group: mathias
+        #mode: '0644'
+  
+    - name: Update apache2 configuration.
+      ansible.builtin.template:
+        src: ./template/apacheconf.j2
+        dest: /etc/apache2/apache2.conf
       when: ansible_os_family == "Debian"
+ 
+    - name: Update httpd configuration.
+      ansible.builtin.template:
+        src: ./template/httpdconf.j2
+        dest: /etc/httpd/conf/httpd.conf
+      when: ansible_os_family == "Rocky"

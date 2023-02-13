@@ -1,0 +1,13 @@
+---
+- name: Copy file with owner and permissions
+  hosts: Ubuntu
+  become: yes
+  tasks:
+    - name: "copy dovecot config. file"
+      copy:
+        src: /etc/dovecot/dovecot.conf
+        dest: /home/mathias/TallerOrt
+        owner: mathias
+        group: mathias
+        mode: '0644'
+        remote_src: true
