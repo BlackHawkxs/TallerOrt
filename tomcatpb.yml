@@ -1,0 +1,26 @@
+---
+name: "Tomcat Installation"
+hosts: Ubuntu 
+become: yes
+tasks:
+  - name: "Update cache"
+    ansible.builtin.package:
+      name: "*"
+      state: present
+  - name: "install java"
+    ansible.builtin.package:
+      name: default-jdk
+      state: present
+
+  - name: "Add tomcat group"
+    ansible.builtin.group:
+      name: tomcat
+      state: present
+ 
+  - name: "Add tomcat user with no shell"
+    ansible.builtin.user:
+      name: tomcat
+      shell: /bin/false
+      groups: tomcat
+      home: /opt/tomcat
+      append: yes 
