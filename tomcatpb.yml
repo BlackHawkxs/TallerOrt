@@ -1,23 +1,33 @@
 ---
 - name: "Tomcat Installation"
-  hosts: Ubuntu 
+  hosts: all
   become: yes
   tasks:
-    - name: "Update cache"
+#    - name: "Update cache"
+#      ansible.builtin.package:
+#        name: "*"
+#        state: present
+#    - name: "Update Rocky cache"
+#      ansible.builtin.dnf:
+#        name: "*"
+#        state: present
+#      when: ansible_os_family == "Rocky"
+#    - name: "install java on debian"
+#      ansible.builtin.package:
+#        name: default-jdk
+#        state: present
+    - name: "install java on rocky"
       ansible.builtin.package:
-        name: "*"
+        name: java-11-openjdk-devel #convertir a variable
         state: present
-    - name: "install java"
-      ansible.builtin.package:
-        name: default-jdk
-        state: present
-
+      when: ansible_os_family == "Rocky"
+   
     - name: "Add tomcat group"
       ansible.builtin.group:
         name: tomcat
         state: present
  
-    - name: "Add tomcat user with no shell"
+    - name: "Add tomcat user without shell"
       ansible.builtin.user:
         name: tomcat
         shell: /bin/false
@@ -31,7 +41,7 @@
 #      dest: /usr/local/bin
 #      remote_src: yes
 
-    - name: Unarchive a file that needs to be downloaded (added in 2.0)
+    - name: "Decompress tomcat"
       ansible.builtin.unarchive:
         src: https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.71/bin/apache-tomcat-9.0.71.tar.gz #convertir a variable
         dest: /opt/tomcat
@@ -54,12 +64,28 @@
        owner: tomcat
        group: tomcat
 
-    - name: "Add tomcat service"
+    - name: "Add tomcat service on rocky"
       ansible.builtin.template:
-        src: ./template/tomcatconf.j2
+        src: ./template/tomcatsvs2.j2
         dest: /etc/systemd/system/tomcat.service
+      when: ansible_os_family == "Rocky"
+    
+    - name: "Add tomcat service on debian"
+      ansible.builtin.template:
+          src: ./template/tomcatsvs.j2
+          dest: /etc/systemd/system/tomcat.service
+    
     - name: "daemon reload"
       ansible.builtin.systemd:
         daemon_reload: true
         name: tomcat
         state: started
+
+    - name: "add tomcat port on rocky"
+      firewalld:
+        port: 8080/tcp
+        zone: public
+        permanent: yes
+        immediate: yes
+        state: enabled
+      when: ansible_os_family == "Rocky"
