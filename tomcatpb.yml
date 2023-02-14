@@ -1,26 +1,65 @@
 ---
-name: "Tomcat Installation"
-hosts: Ubuntu 
-become: yes
-tasks:
-  - name: "Update cache"
-    ansible.builtin.package:
-      name: "*"
-      state: present
-  - name: "install java"
-    ansible.builtin.package:
-      name: default-jdk
-      state: present
+- name: "Tomcat Installation"
+  hosts: Ubuntu 
+  become: yes
+  tasks:
+    - name: "Update cache"
+      ansible.builtin.package:
+        name: "*"
+        state: present
+    - name: "install java"
+      ansible.builtin.package:
+        name: default-jdk
+        state: present
 
-  - name: "Add tomcat group"
-    ansible.builtin.group:
-      name: tomcat
-      state: present
+    - name: "Add tomcat group"
+      ansible.builtin.group:
+        name: tomcat
+        state: present
  
-  - name: "Add tomcat user with no shell"
-    ansible.builtin.user:
-      name: tomcat
-      shell: /bin/false
-      groups: tomcat
-      home: /opt/tomcat
-      append: yes 
+    - name: "Add tomcat user with no shell"
+      ansible.builtin.user:
+        name: tomcat
+        shell: /bin/false
+        groups: tomcat
+        home: /opt/tomcat
+        append: yes 
+
+#    - name: Unarchive a file that is already on the remote machine
+#    ansible.builtin.unarchive:
+#      src: /tmp/foo.zip
+#      dest: /usr/local/bin
+#      remote_src: yes
+
+    - name: Unarchive a file that needs to be downloaded (added in 2.0)
+      ansible.builtin.unarchive:
+        src: https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.71/bin/apache-tomcat-9.0.71.tar.gz #convertir a variable
+        dest: /opt/tomcat
+        remote_src: yes
+        extra_opts:
+          - --strip-components=1
+#    - name: Unarchive a file with extra options
+#      ansible.builtin.unarchive:
+#        src: /tmp/foo.zip
+#        dest: /usr/local/bin
+#        extra_opts:
+#          - --transform
+          
+  
+    - name: Recursively change ownership of a directory
+      ansible.builtin.file:
+       path: /opt/tomcat
+       state: directory
+       recurse: yes
+       owner: tomcat
+       group: tomcat
+
+    - name: "Add tomcat service"
+      ansible.builtin.template:
+        src: ./template/tomcatconf.j2
+        dest: /etc/systemd/system/tomcat.service
+    - name: "daemon reload"
+      ansible.builtin.systemd:
+        daemon_reload: true
+        name: tomcat
+        state: started
