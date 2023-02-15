@@ -22,9 +22,9 @@
         state: present
       when: ansible_os_family == "Rocky"
    
-    - name: "install java"
+    - name: "install java on debian"
       ansible.builtin.package:
-        name: default-jdk
+        name: default-jdk # convertir a variable
         state: present
       when: ansible_os_family == "Debian"
     
@@ -80,6 +80,7 @@
       ansible.builtin.template:
           src: ./template/tomcatsvs.j2
           dest: /etc/systemd/system/tomcat.service
+      when: ansible_os_family == "Debian"
     
     - name: "daemon reload"
       ansible.builtin.systemd:
@@ -95,3 +96,13 @@
         immediate: yes
         state: enabled
       when: ansible_os_family == "Rocky"
+
+## hacer comando para habilitar servicio
+
+    - name: "copy .war file"
+      ansible.builtin.copy:
+        src: /home/mathias/TallerOrt/todo.war
+        dest: /opt/tomcat/webapps/todo.war
+        owner: tomcat
+        group: tomcat
+        mode: '0644'
