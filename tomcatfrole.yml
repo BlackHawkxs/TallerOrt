@@ -1,0 +1,6 @@
+---
+- name: "install services from roles"
+  hosts: all
+  become: yes
+  roles: 
+    - tomcat

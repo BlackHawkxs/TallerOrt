@@ -8,7 +8,7 @@
         name: "*"
         state: latest
       when: ansible_os_family == "Rocky"
-    - name: Update packages for Rocky
+    - name: Update packages for Debian
       apt:
         name: "*"
         state: latest

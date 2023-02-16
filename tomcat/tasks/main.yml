@@ -1,9 +1,4 @@
 ---
-- name: "Tomcat Installation"
-  hosts: all
-  become: yes
-  tasks:
-
     - name: "install java on rocky"
       ansible.builtin.package:
         name: java-11-openjdk-devel #convertir a variable
@@ -82,4 +77,4 @@
         owner: tomcat
         group: tomcat
         mode: '0644'
-
+# tasks file for tomcat
