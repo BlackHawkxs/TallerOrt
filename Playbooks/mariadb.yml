@@ -1,0 +1,67 @@
+---
+- name: "Install and config MariaDB"
+  hosts: all
+  become: yes
+  tasks:
+    #- name: "Update cache"
+    #  ansible.builtin.package:
+    #    name: "*"
+    #   state: latest
+
+    - name: "dependencies for MariaDB"
+      ansible.builtin.package:
+        name:
+          - python3
+          - python3-pip
+        state: present
+   # - name: Install bottle python package
+   #   ansible.builtin.pip:
+   #     name: PyMySQL
+
+    - name: "Install MariaDB"
+      pip:
+        name: PyMySQL 
+
+    - name: "Install MariaDB"
+      ansible.builtin.package:
+        name:
+          - mariadb-server
+          - mariadb-client
+        state: present
+    
+    - name: Create database user with password and all database privileges and 'WITH GRANT OPTION'
+      mysql_user:
+        login_user: root
+        login_password: Password01
+        login_unix_socket: /var/run/mysqld/mysqld.sock
+        name: tomcat
+        password: Password01
+        priv: '*.*:ALL,GRANT'
+        state: present
+    
+    - name: Create a new database with name 'todo'
+      community.mysql.mysql_db:
+        name: todo
+        login_user: tomcat
+        login_password: Password01
+        state: present
+    
+    - name: Create a new database with name 'users'
+      community.mysql.mysql_db:
+        name: users
+        login_user: tomcat
+        login_password: Password01
+        state: present
+   
+    - name: Copy .sql file 
+      copy:
+        src: resources/tables.sql
+        dest: /tmp/tables.sql
+    
+    - name: insert tables to database
+      community.mysql.mysql_db:
+        name: todo
+        login_user: tomcat
+        login_password: Password01
+        state: import
+        target: /tmp/tables.sql
