@@ -70,11 +70,24 @@
         state: enabled
       when: ansible_os_family == "Rocky"
 
+    - name: "Create config directory"
+      ansible.builtin.file:
+        path: /opt/config
+        state: directory
+        recurse: yes
+        owner: tomcat
+        group: tomcat
+
     - name: "copy .war file"
       ansible.builtin.copy:
-        src: /home/mathias/TallerOrt/todo.war
+        src: resources/todo.war
         dest: /opt/tomcat/webapps/todo.war
         owner: tomcat
         group: tomcat
         mode: '0644'
+    
+    - name: "copy app.properties"
+      ansible.builtin.copy:
+        src: resources/app.properties
+        dest: /opt/config/app.properties 
 # tasks file for tomcat
