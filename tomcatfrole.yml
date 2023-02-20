@@ -1,0 +1,11 @@
+---
+- name: "install services from roles"
+  hosts: all
+  become: yes
+  vars:
+    tomcat_folder_location: /opt/tomcat
+    app_location: /opt/config
+    rocky_firewall_tomcat_port: 8080/tcp
+  roles: 
+    - tomcat
+    #- mariadb
