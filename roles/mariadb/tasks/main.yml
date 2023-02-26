@@ -6,7 +6,7 @@
           - python3-pip
         state: present
    
-    - name: "Install MariaDB"
+    - name: "Install PIP module"
       pip:
         name: PyMySQL 
 
@@ -24,7 +24,7 @@
           - mariadb-server
           - mariadb
         state: present
-      when: ansible_os_family == "Rocky"
+      when: ansible_os_family == "RedHat"
     
     - name: "Enable mariadb service on rocky"
       ansible.builtin.service:
@@ -34,39 +34,25 @@
     
     - name: Create database user with password and all database privileges and 'WITH GRANT OPTION'
       mysql_user:
-        login_user: {{ sql_login_user }}
-        login_password: Password01
+        login_user: "{{ sql_login_user }}"
+        login_password: "{{ sql_login_password }}"
         login_unix_socket: /var/run/mysqld/mysqld.sock
-        name: tomcat
-        password: Password01
+        name: "{{ sql_new_user }}"
+        password: "{{ sql_new_user_password  }}"
         priv: '*.*:ALL,GRANT'
         state: present
       when: ansible_os_family == "Debian"
   
     - name: Create database user with password and all database privileges and 'WITH GRANT OPTION'
       mysql_user:
-        login_user: root
+        login_user: "{{ sql_login_user }}"
         login_password: 
-        name: tomcat
-        password: Password01
+        name: "{{ sql_new_user }}"
+        password: "{{ sql_new_user_password  }}"
         priv: '*.*:ALL,GRANT'
         state: present
-      when: ansible_os_family == "Rocky"
-    
-    - name: Create a new database with name 'todo'
-      community.mysql.mysql_db:
-        name: todo
-        login_user: tomcat
-        login_password: Password01
-        state: present
-    
-    - name: Create a new database with name 'users'
-      community.mysql.mysql_db:
-        name: users
-        login_user: tomcat
-        login_password: Password01
-        state: present
-   
+      when: ansible_os_family == "RedHat"
+         
     - name: Copy .sql file 
       copy:
         src: resources/tables.sql
@@ -74,9 +60,9 @@
     
     - name: insert tables to database
       community.mysql.mysql_db:
-        name: todo
-        login_user: tomcat
-        login_password: Password01
+        name: "{{  sql_database_name  }}"
+        login_user: "{{ sql_new_user }}"
+        login_password: "{{ sql_new_user_password  }}"
         state: import
         target: /tmp/tables.sql
 # tasks file for mariadb

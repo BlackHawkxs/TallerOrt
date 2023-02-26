@@ -3,7 +3,7 @@
       ansible.builtin.package:
         name: java-11-openjdk-devel #convertir a variable
         state: present
-      when: ansible_os_family == "Rocky"
+      when: ansible_os_family == "RedHat"
    
     - name: "install java on debian"
       ansible.builtin.package:
@@ -21,14 +21,14 @@
         name: tomcat
         shell: /bin/false
         groups: tomcat
-        home: /opt/tomcat
+        home: "{{  tomcat_folder_location  }}"
         append: yes 
 
 
     - name: "Decompress tomcat"
       ansible.builtin.unarchive:
-        src: https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.71/bin/apache-tomcat-9.0.71.tar.gz #convertir a variable
-        dest: /opt/tomcat
+        src: https://dlcdn.apache.org/tomcat/tomcat-9/v{{  tomcat_version  }}/bin/apache-tomcat-{{  tomcat_version  }}.tar.gz #convertir a variable
+        dest: "{{  tomcat_folder_location  }}"
         remote_src: yes
         extra_opts:
           - --strip-components=1
@@ -36,7 +36,7 @@
   
     - name: Recursively change ownership of a directory
       ansible.builtin.file:
-       path: /opt/tomcat
+       path: "{{  tomcat_folder_location  }}"
        state: directory
        recurse: yes
        owner: tomcat
@@ -46,7 +46,7 @@
       ansible.builtin.template:
         src: ./template/tomcatsvs2.j2
         dest: /etc/systemd/system/tomcat.service
-      when: ansible_os_family == "Rocky"
+      when: ansible_os_family == "RedHat"
     
     - name: "Add tomcat service on debian"
       ansible.builtin.template:
@@ -63,16 +63,16 @@
 
     - name: "add tomcat port on rocky"
       firewalld:
-        port: 8080/tcp
+        port: "{{ rocky_firewall_tomcat_port }}"
         zone: public
         permanent: yes
         immediate: yes
         state: enabled
-      when: ansible_os_family == "Rocky"
+      when: ansible_os_family == "RedHat"
 
     - name: "Create config directory"
       ansible.builtin.file:
-        path: /opt/config
+        path: "{{  tomcat_app_location  }}"
         state: directory
         recurse: yes
         owner: tomcat
@@ -81,13 +81,13 @@
     - name: "copy .war file"
       ansible.builtin.copy:
         src: resources/todo.war
-        dest: /opt/tomcat/webapps/todo.war
+        dest: "{{  tomcat_folder_location }}/webapps/{{  tomcat_app_name  }}"
         owner: tomcat
         group: tomcat
         mode: '0644'
     
-    - name: "copy app.properties"
-      ansible.builtin.copy:
-        src: resources/app.properties
-        dest: /opt/config/app.properties 
+    - name: "template app.properties"
+      ansible.builtin.template:
+        src: resources/app.properties.j2
+        dest: "{{  tomcat_app_location  }}/app.properties" 
 # tasks file for tomcat
