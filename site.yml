@@ -15,6 +15,6 @@
     - roles/tomcat/vars/tomcat_vars.yml
     - roles/mariadb/vars/mariadb_vars.yml
   roles:
-    #- devsec.hardening.os_hardening 
+    - devsec.hardening.os_hardening 
     - tomcat
     - mariadb
