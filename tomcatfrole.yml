@@ -1,11 +1,20 @@
 ---
+- name: "add syslog group"
+  hosts: all
+  become: yes
+  tasks:
+    - name: add syslog group
+      group:
+        name: syslog
+        state: present
+
 - name: "install services from roles"
   hosts: all
   become: yes
-  vars:
-    tomcat_folder_location: /opt/tomcat
-    app_location: /opt/config
-    rocky_firewall_tomcat_port: 8080/tcp
-  roles: 
+  vars_files:
+    - roles/tomcat/vars/tomcat_vars.yml
+    - roles/mariadb/vars/mariadb_vars.yml
+  roles:
+    #- devsec.hardening.os_hardening 
     - tomcat
-    #- mariadb
+    - mariadb
