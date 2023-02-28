@@ -1,13 +1,13 @@
 ---
     - name: "install java on rocky"
       ansible.builtin.package:
-        name: java-11-openjdk-devel #convertir a variable
+        name: java-11-openjdk-devel 
         state: present
       when: ansible_os_family == "RedHat"
    
     - name: "install java on debian"
       ansible.builtin.package:
-        name: default-jdk # convertir a variable
+        name: default-jdk 
         state: present
       when: ansible_os_family == "Debian"
     
@@ -80,7 +80,7 @@
 
     - name: "copy .war file"
       ansible.builtin.copy:
-        src: resources/todo.war
+        src: roles/tomcat/resources/todo.war
         dest: "{{  tomcat_folder_location }}/webapps/{{  tomcat_app_name  }}"
         owner: tomcat
         group: tomcat
@@ -88,6 +88,6 @@
     
     - name: "template app.properties"
       ansible.builtin.template:
-        src: resources/app.properties.j2
+        src: roles/tomcat/resources/app.properties.j2
         dest: "{{  tomcat_app_location  }}/app.properties" 
 # tasks file for tomcat

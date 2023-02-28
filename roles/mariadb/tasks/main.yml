@@ -55,7 +55,7 @@
          
     - name: Copy .sql file 
       copy:
-        src: resources/tables.sql
+        src: roles/mariadb/resources/tables.sql
         dest: /tmp/tables.sql
     
     - name: insert tables to database
